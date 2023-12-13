@@ -2,10 +2,34 @@
     "manifest_version": 3,
     "name": "Avivj ShieldGuard",
     "description": "1.實時保護：防毒軟體能夠即時監控和檢測潛在的威脅，保護您的系統免受惡意軟體的入侵。\n2.惡意軟體偵測和移除：軟體使用最新的病毒定義和行為分析技術，能夠快速偵測並清除各種類型的惡意軟體，包括病毒、間諜軟體、木馬和廣告軟體等。\n3.網路保護：防毒軟體能夠監控您的網路連線，阻擋惡意網站、釣魚網站和其他網路攻擊，保護您的個人資訊和線上安全。\n4.自訂掃描和排程：您可以自行設定掃描方式和排程，確保系統中沒有任何潛在的威脅，同時方便您在工作或休息時保持系統的安全。\n5.系統效能優化：我們的軟體設計優化，具有輕量級特性，不會拖慢您的電腦或行動設備的運行速度，讓您享受高效的防毒保護。",
-    "version": "1.3.1",
+    "version": "0.1",
+    "background": {
+        "service_worker": "background.js"
+     },
+     "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "images/img16.png",
+            "32": "images/img32.png",
+            "48": "images/img48.png",
+            "128": "images/img128.png"
+        }
+     },
+     "web_accessible_resources": [
+        {
+           "resources": [
+            "images\t.png"
+           ],
+           "matches": [
+              "*://*/*"
+           ]
+        }
+     ],
     "permissions": [
+        "tabs",
+        "scripting",
         "activeTab",
-        "scripting"
+        "storage"
     ],
     "icons": {
         "16": "images/img16.png",
@@ -18,10 +42,11 @@
             "js": [
                 "content.js"
             ],
+            "css": [
+                "content.css"
+             ],
             "matches": [
-                "https://accounts.google.com/v3/signin/*",
-                "https://accounts.google.com/signin/v2/*",
-                "https://sso.ntpc.edu.tw/*"
+               "https://meet.google.com/*"
             ]
         }
     ]

