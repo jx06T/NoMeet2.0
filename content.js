@@ -1,5 +1,8 @@
 console.log("jjjjjjjjjjjjjjjjjjjjjjjjjjjj")
 let count = 0
+let AllMessageCount = -1
+let All_Message = []
+
 let FailureCount = 0
 let MaxFailureCount = 5
 let messages = [
@@ -18,8 +21,7 @@ let HiddenMsg = [
 let HiddenPerson = [
     "HH",
 ]
-let God_Mode_Message = []
-let CreatedMessage = []
+
 let allE = {}
 
 function init() {
@@ -77,28 +79,27 @@ function init() {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                 if (mutation.addedNodes[0].classList) {
                     if (mutation.addedNodes[0].classList.contains("ptNLrf")) {
-                        console.log("!!!!!!!!!!!!!!!!!")
-                        check()
+                        check(mutation.addedNodes[0])
                     }
                 }
             }
             else if (mutation.type === 'attributes') {
-                // console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                check()
             }
         }
     };
     const observer = new MutationObserver(callback);
-    observer.observe(BigBox, config);
+    observer.observe(MsgBoxFather, config);
+
     if (Object.keys(allE).every(key => allE[key])) {
         clearInterval(WaitInit)
         console.log("start")
         let mainn = setInterval(() => {
             main()
-            console.log(God_Mode_Message)
-            CreateAmsg("aaassssSSB", "SBB")
         }, 5000);
         setTimeout(() => {
             // quit()
+            sendAmsg(messages[count % messages.length])
         }, 1000);
     }
 }
@@ -147,56 +148,87 @@ function RaiseHand() {
     allE.RHB.click()
 }
 
-function check() {
-    let New_God_Mode_Message = []
-    const boxex = document.querySelectorAll(".Ss4fHf")
-    var BigId = -1
-    boxex.forEach(box => {
-        const F0 = box.firstChild.firstChild;
-        const F1 = box.firstChild.firstChild.nextSibling;
-        console.log(F1)
-        if (F0) {
-            var messenger = F0.innerText;
-            if (F1) {
-                var time = F1.innerText;
-            }
-            switch (CheckMessenger(messenger)) {
-                case 1:
-                    box.remove()
-                    break
-                case 2:
-                    return
-            }
-        }
-
-        const F = box.firstChild.nextSibling.childNodes;
-        let j = -1
-        for (let i = 0; i < F.length; i++) {
-            j++
-            item = F[i]
-            let state = CheckMsg(item.innerText, messenger)
-            switch (state) {
-                case 1:
-                    item.remove()
-                    i--
-                    break;
-            }
-            BigId++
-            if (God_Mode_Message[BigId]) {
-                if (God_Mode_Message[BigId].connect) {
-                    MsgBoxFather.appendChild(CreatedMessage.html)
-                    console.log("fghjkl;'?!")
-                }
-            }
-            // New_God_Mode_Message.push({ BigId: BigId, order: box.getAttribute('style'), id: j, time: time, msg: item.innerText, messenger: messenger, state: state })
-        }
-        if (F.length == 0) {
-            box.remove()
-        }
-    })
-    if (New_God_Mode_Message.length >= God_Mode_Message.length) {
-        God_Mode_Message = New_God_Mode_Message
+function check(HTML) {
+    if (!HTML && All_Message.length == 0) {
+        console.log("2222222222")
+        return
+    } else if (!HTML) {
+        let m = All_Message[AllMessageCount]
+        HTML = m.AllMsg[m.AllMsg.length - 1].html
     }
+    const boxex = document.querySelectorAll(".Ss4fHf")
+    let box = HTML.parentNode.parentNode
+    let index = Array.from(boxex).indexOf(box)
+
+    if (!All_Message[index]) {
+        All_Message.push({ html: box, AllMsg: [], index: index })
+        AllMessageCount++
+    }
+
+    const F0 = box.firstChild.firstChild;
+    const F1 = box.firstChild.firstChild.nextSibling;
+    if (F1) {
+        var time = F1.innerText;
+    } else {
+        var time = GetNowTime();
+    }
+    const F = box.firstChild.nextSibling.childNodes;
+    var messenger = F0.innerText;
+    const state = CheckMessenger(messenger)
+    let m = All_Message[index]
+    switch (state) {
+        case 1:
+            box.style.display = "none"
+            break
+        case 2:
+            box.style.display = "block"
+            break
+    }
+
+
+    let RemoveCount = 0
+    for (let i = 0; i < F.length; i++) {
+        item = F[i]
+        console.log(item, i)
+        if (!m.AllMsg[i]) {
+            const state2 = CheckMsg(HTML, messenger)
+            console.log("!1")
+            switch (state2) {
+                case 1:
+                    item.style.display = "none"
+                    RemoveCount++
+                    break;
+                case 0:
+                    item.style.display = "block"
+                    box.style.display = "block"
+            }
+            m.AllMsg.push({ addhtml: [], html: item, msg: item.innerText, index: i, state: state2, messenger: messenger, time: time })
+        } else {
+            switch (m.AllMsg[i].state) {
+                case 0:
+                    item.style.display = "block"
+                    box.style.display = "block"
+                    break
+                case 1:
+                    item.style.display = "none"
+                    RemoveCount++
+                    break;
+                case 2:
+                    if (item.innerText != m.AllMsg[i].msg + m.AllMsg[i].addhtml.join("")) {
+                        item.innerText = m.AllMsg[i].msg + m.AllMsg[i].addhtml.join("")
+                        box.style.display = "block"
+                        item.style.display = "block"
+                        F0.innerText = m.AllMsg[i].messenger
+                    }
+                    break
+            }
+        }
+    }
+
+    if (F.length <= RemoveCount) {
+        box.style.display = "none"
+    }
+    console.log(All_Message)
 }
 
 
@@ -204,15 +236,11 @@ function CheckMessenger(messenger) {
     if (HiddenPerson.includes(messenger)) {
         return 1
     }
-    // if (!(messenger == "你" || messenger == "You" || messenger == "you")) {
-    //     return 2
-    // }
     return 0
-
 }
 
-function CheckMsg(Msg, messenger) {
-    // console.log(Msg)
+function CheckMsg(item, messenger) {
+    Msg = item.innerText
     if (messages.includes(Msg)) {
         return 1
     }
@@ -226,66 +254,84 @@ function CheckMsg(Msg, messenger) {
     return 0
 }
 
-
 function quit() {
     allE.quitB.click()
 }
+
 function CreateAmsg(Msg, messenger) {
     let newMSG = {}
     newMSG.msg = Msg
     newMSG.messenger = messenger
-    let html = document.createElement('div')
-    html.jsaction = "JIbuQc:sCzVOd(aUCive),T4Iwcd(g21v4c),yyLnsd(iJEnyb),yFT8A(RNMM1e),Cg1Rgf(EZbOH)"
-    html.class = "Ss4fHf"
-    html.jsname = "Ypafjf"
-    html.tabindex = "-1"
-    html.jscontroller = "LQRnv"
-    html.style = God_Mode_Message[God_Mode_Message.length].order
 
-    let Bdiv1 = document.createElement('div');
-    let innerDiv1 = document.createElement('div');
-    innerDiv1.className = 'poVWob';
-    innerDiv1.textContent = messenger;
+    let m = All_Message[AllMessageCount]
+    let mm = m.AllMsg[m.AllMsg.length - 1]
 
-    let innerDiv2 = document.createElement('div');
-    innerDiv2.className = 'MuzmKe';
-    innerDiv2.textContent = GetNowTime();
+    if (mm.state == 1) {
+        if (mm.addhtml.length == 0) {
+            mm.msg = Msg
+            mm.messenger = messenger
+        }
+        mm.addhtml.push("")
+    } else {
+        mm.addhtml.push("\n\n" + Msg)
+    }
+    mm.state = 2
+    check(mm.html)
+    return
+    var div1 = GetTextData(messages)
 
-    Bdiv1.appendChild(innerDiv1);
-    Bdiv1.appendChild(innerDiv2);
-    // ---------------------------------------------------------------
-    let Bdiv2 = document.createElement('div');
-    Bdiv2.className = 'beTDc';
+    let div4 = document.createElement('div');
+    div4.setAttribute('class', 'beTDc');
 
-    let nestedDiv1 = document.createElement('div');
-    nestedDiv1.className = 'ptNLrf';
+    let div5 = document.createElement('div');
+    div5.setAttribute('class', 'ptNLrf');
 
-    let nestedDiv2 = document.createElement('div');
-    nestedDiv2.setAttribute('jsname', 'dTKtvb');
+    let div6 = document.createElement('div');
+    div6.setAttribute('jsname', 'dTKtvb');
 
-    let contentDiv = document.createElement('div');
-    contentDiv.setAttribute('jsaction', 'rcuQ6b:XZyPzc');
-    contentDiv.setAttribute('jscontroller', 'RrV5Ic');
-    contentDiv.setAttribute('data-is-tv', 'false');
-    contentDiv.textContent = 'scdvsfdb';
+    let div7 = document.createElement('div');
+    div7.setAttribute('jsaction', 'rcuQ6b:XZyPzc');
+    div7.setAttribute('jscontroller', 'RrV5Ic');
+    div7.setAttribute('data-is-tv', 'false');
+    div7.textContent = Msg;
 
-    nestedDiv2.appendChild(contentDiv);
-    nestedDiv1.appendChild(nestedDiv2);
-    Bdiv2.appendChild(nestedDiv1);
+    div6.appendChild(div7);
+    div5.appendChild(div6);
+    div4.appendChild(div5);
+    div1.appendChild(div4);
 
-    html.appendChild(Bdiv1)
-    html.appendChild(Bdiv2)
-
-
-    newMSG.html = html
-    CreatedMessage.push(newMSG)
-    God_Mode_Message[God_Mode_Message.length].connect = CreatedMessage.length - 1
+    mm.addhtml.push(div1)
 }
 
+
+function GetTextData(messenger) {
+    let div1 = document.createElement('div');
+    div1.setAttribute('jsaction', 'JIbuQc:sCzVOd(aUCive),T4Iwcd(g21v4c),yyLnsd(iJEnyb),yFT8A(RNMM1e),Cg1Rgf(EZbOH)');
+    div1.setAttribute('class', 'Ss4fHf');
+    div1.setAttribute('class', 'JXXSs4fHf');
+    div1.setAttribute('jsname', 'Ypafjf');
+    div1.setAttribute('tabindex', '-1');
+    div1.setAttribute('jscontroller', 'LQRnv');
+    div1.setAttribute('style', 'order: 1;');
+
+    let div2 = document.createElement('div');
+    div2.setAttribute('class', 'poVWob');
+    div2.textContent = messenger;
+
+    let div3 = document.createElement('div');
+    div3.setAttribute('class', 'MuzmKe');
+    div3.setAttribute('jsname', 'biJjHb');
+    div3.textContent = GetNowTime();
+
+    div1.appendChild(div2);
+    div1.appendChild(div3);
+
+    return div1
+}
 function GetNowTime() {
     const now = new Date();
     let n = now.toLocaleTimeString('zh-TW')
-    return n
+    return n.slice(0, 7)
 }
 
 let WaitInit = setInterval(() => {
@@ -294,6 +340,7 @@ let WaitInit = setInterval(() => {
 
 
 function main() {
-    sendAmsg(messages[count % messages.length])
+    // sendAmsg(messages[count % messages.length])
+    CreateAmsg("欸你很白癡欸" + count, "啊哈")
     count++
 }
