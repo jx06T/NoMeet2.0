@@ -150,12 +150,12 @@ function RaiseHand() {
 
 function check(HTML) {
     if (!HTML && All_Message.length == 0) {
-        console.log("2222222222")
         return
     } else if (!HTML) {
         let m = All_Message[AllMessageCount]
         HTML = m.AllMsg[m.AllMsg.length - 1].html
     }
+    console.log("!!check")
     const boxex = document.querySelectorAll(".Ss4fHf")
     let box = HTML.parentNode.parentNode
     let index = Array.from(boxex).indexOf(box)
@@ -192,7 +192,6 @@ function check(HTML) {
         console.log(item, i)
         if (!m.AllMsg[i]) {
             const state2 = CheckMsg(HTML, messenger)
-            console.log("!1")
             switch (state2) {
                 case 1:
                     item.style.display = "none"
@@ -201,6 +200,12 @@ function check(HTML) {
                 case 0:
                     item.style.display = "block"
                     box.style.display = "block"
+                    if (m.AllMsg[i - 1]) {
+                        if (m.AllMsg[i - 1].addhtml[m.AllMsg[i - 1].addhtml.length - 1].data[0] != messenger) {
+                            F[i - 1].innerText += GetTextData(messenger, GetNowTime())
+                            console.log("233")
+                        }
+                    }
             }
             m.AllMsg.push({ addhtml: [], html: item, msg: item.innerText, index: i, state: state2, messenger: messenger, time: time })
         } else {
@@ -208,17 +213,41 @@ function check(HTML) {
                 case 0:
                     item.style.display = "block"
                     box.style.display = "block"
+                    if (m.AllMsg[i - 1]) {
+                        if (m.AllMsg[i - 1].addhtml[m.AllMsg[i - 1].addhtml.length - 1].data[0] != messenger) {
+                            F[i - 1].innerText += GetTextData(messenger, GetNowTime())
+                            console.log("233")
+                        }
+                    }
                     break
                 case 1:
                     item.style.display = "none"
                     RemoveCount++
                     break;
                 case 2:
-                    if (item.innerText != m.AllMsg[i].msg + m.AllMsg[i].addhtml.join("")) {
-                        item.innerText = m.AllMsg[i].msg + m.AllMsg[i].addhtml.join("")
-                        box.style.display = "block"
-                        item.style.display = "block"
+                    if (m.AllMsg[i - 1]) {
+                        if (m.AllMsg[i - 1].addhtml[m.AllMsg[i - 1].addhtml.length - 1].data[0] != m.AllMsg[i].messenger) {
+                            F[i - 1].innerText += GetTextData(m.AllMsg[i].messenger, GetNowTime())
+                            console.log("233")
+                        }
+                    }
+                    item.innerText = m.AllMsg[i].msg
+                    box.style.display = "block"
+                    item.style.display = "block"
+                    if (i==0) {
                         F0.innerText = m.AllMsg[i].messenger
+                    }
+                    for (let k = 0; k < m.AllMsg[i].addhtml.length; k++) {
+                        if (k > 0) {
+                            if (m.AllMsg[i].addhtml[k - 1].data[0] != m.AllMsg[i].addhtml[k].data[0]) {
+                                item.innerText += m.AllMsg[i].addhtml[k].e
+                            }
+                        } else {
+                            if (m.AllMsg[i].messenger != m.AllMsg[i].addhtml[k].data[0]) {
+                                item.innerText += m.AllMsg[i].addhtml[k].e
+                            }
+                        }
+                        item.innerText += m.AllMsg[i].addhtml[k].text
                     }
                     break
             }
@@ -266,72 +295,35 @@ function CreateAmsg(Msg, messenger) {
     let m = All_Message[AllMessageCount]
     let mm = m.AllMsg[m.AllMsg.length - 1]
 
+    console.log(mm.state + "")
     if (mm.state == 1) {
         if (mm.addhtml.length == 0) {
             mm.msg = Msg
             mm.messenger = messenger
+            mm.time = GetNowTime()
         }
-        mm.addhtml.push("")
+        mm.addhtml.push({ text: "", data: [messenger, GetNowTime()], e: GetTextData(messenger, GetNowTime()) })
     } else {
-        mm.addhtml.push("\n\n" + Msg)
+        mm.addhtml.push({ text: "\n\n" + Msg, data: [messenger, GetNowTime()], e: GetTextData(messenger, GetNowTime()) })
     }
     mm.state = 2
     check(mm.html)
     return
-    var div1 = GetTextData(messages)
 
-    let div4 = document.createElement('div');
-    div4.setAttribute('class', 'beTDc');
-
-    let div5 = document.createElement('div');
-    div5.setAttribute('class', 'ptNLrf');
-
-    let div6 = document.createElement('div');
-    div6.setAttribute('jsname', 'dTKtvb');
-
-    let div7 = document.createElement('div');
-    div7.setAttribute('jsaction', 'rcuQ6b:XZyPzc');
-    div7.setAttribute('jscontroller', 'RrV5Ic');
-    div7.setAttribute('data-is-tv', 'false');
-    div7.textContent = Msg;
-
-    div6.appendChild(div7);
-    div5.appendChild(div6);
-    div4.appendChild(div5);
-    div1.appendChild(div4);
-
-    mm.addhtml.push(div1)
 }
 
 
-function GetTextData(messenger) {
-    let div1 = document.createElement('div');
-    div1.setAttribute('jsaction', 'JIbuQc:sCzVOd(aUCive),T4Iwcd(g21v4c),yyLnsd(iJEnyb),yFT8A(RNMM1e),Cg1Rgf(EZbOH)');
-    div1.setAttribute('class', 'Ss4fHf');
-    div1.setAttribute('class', 'JXXSs4fHf');
-    div1.setAttribute('jsname', 'Ypafjf');
-    div1.setAttribute('tabindex', '-1');
-    div1.setAttribute('jscontroller', 'LQRnv');
-    div1.setAttribute('style', 'order: 1;');
+function GetTextData(messenger, time) {
+    let text = `\n\n\n${messenger}　${time}`
 
-    let div2 = document.createElement('div');
-    div2.setAttribute('class', 'poVWob');
-    div2.textContent = messenger;
-
-    let div3 = document.createElement('div');
-    div3.setAttribute('class', 'MuzmKe');
-    div3.setAttribute('jsname', 'biJjHb');
-    div3.textContent = GetNowTime();
-
-    div1.appendChild(div2);
-    div1.appendChild(div3);
-
-    return div1
+    return text
 }
 function GetNowTime() {
     const now = new Date();
     let n = now.toLocaleTimeString('zh-TW')
-    return n.slice(0, 7)
+    var result = n.substring(0, n.indexOf(":", n.indexOf(":") + 1));  // 取得冒號之前的部分
+    // console.log(result);  // 輸出結果
+    return result
 }
 
 let WaitInit = setInterval(() => {
